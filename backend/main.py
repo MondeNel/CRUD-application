@@ -77,6 +77,20 @@ def update_contact(id):
     return jsonify({"message": "Contact updated successfully"}), 200
 
 
+# Define a route to delete a contact
+@app.route('/contacts/<int:id>', methods=['DELETE'])
+def delete_contact(id):
+    """
+    Delete a contact from the database.
+    
+    """
+    contact = Contact.query.get(id)
+    if not contact:
+        return jsonify({"error": "Contact not found"}), 404
+    
+    db.session.delete(contact)
+    db.session.commit()
+    return jsonify({"message": "Contact deleted successfully"}), 200
 
 
 
