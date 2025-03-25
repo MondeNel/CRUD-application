@@ -2,7 +2,9 @@ from flask import request, jsonify
 from config import db, app
 from models import Contact
 
-# Define a route to create a new contact
+
+
+#  Retrieve all contacts from the database
 @app.route('/contacts', methods=['GET'])
 def get_contacts():
     """
@@ -17,6 +19,8 @@ def get_contacts():
   
 
 
+
+# Define a route to create a new contact
 @app.route('/contacts', methods=['POST'])
 def create_contact():
     """
@@ -42,6 +46,39 @@ def create_contact():
         return jsonify({"error": str(e)}), 400
     
     return jsonify({"message": "Contact created successfully"}), 201
+
+
+# Define a route to update a contact
+@app.route('/contacts/<int:id>', methods=['PUT'])
+def update_contact(id):
+    """
+    Update an existing contact in the database.
+
+    Parameters:
+        id (int): The ID of the contact to update.
+
+    Returns:
+        JSON response indicating success or failure.
+    """
+    contact = Contact.query.get(id)
+    if not contact:
+        return jsonify({"error": "Contact not found"}), 404
+
+    data = request.json
+    contact.first_name = data.get("firstName", contact.first_name)
+    contact.last_name = data.get("lastName", contact.last_name)
+    contact.email = data.get("email", contact.email)
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify({"message": "Contact updated successfully"}), 200
+
+
+
+
 
 
 
