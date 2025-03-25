@@ -2,47 +2,47 @@ from flask import request, jsonify
 from config import db, app
 from models import Contact
 
-
-@app.route('/contacts', methods=['GET', 'POST'])
-def handle_contacts():
+# Define a route to create a new contact
+@app.route('/contacts', methods=['GET'])
+def get_contacts():
     """
-    Handle GET and POST requests for contacts.
-
-    - GET: Retrieve all contacts from the database.
-    - POST: Create a new contact.
+    Retrieve all contacts from the database.
 
     Returns:
-        JSON response with contact data.
+        JSON response with a list of all contacts.
     """
-    if request.method == 'GET':
-        # Retrieve all contacts from the database
-        contacts = Contact.query.all()
-        
-        # Convert contact objects to JSON format
-        json_contacts = [contact.to_json() for contact in contacts]
-        
-        return jsonify({"contacts": json_contacts}), 200
+    contacts = Contact.query.all()
+    json_contacts = [contact.to_json() for contact in contacts]
+    return jsonify({"contacts": json_contacts}), 200
+  
 
-    elif request.method == 'POST':
-        # Get JSON data from the request
-        data = request.get_json()
 
-        # Validate required fields
-        if not data or not all(k in data for k in ("first_name", "last_name", "email")):
-            return jsonify({"error": "Missing required fields"}), 400
+@app.route('/contacts', methods=['POST'])
+def create_contact():
+    """
+    Create a new contact and add it to the database.
+    
+    Returns:
+        JSON response with the newly created contact.
 
-        # Create a new contact instance
-        new_contact = Contact(
-            first_name=data["first_name"],
-            last_name=data["last_name"],
-            email=data["email"]
-        )
+    """
+    first_name = request.json.get("firstName")
+    last_name = request.json.get("lastName")
+    email = request.json.get("email")
 
-        # Save to the database
+    if not first_name or not last_name or not email:
+        return jsonify(
+            {"error": "Please provide first name, last name, and email"}), 400
+
+    new_contact = Contact(first_name=first_name, last_name=last_name, email=email)
+    try:
         db.session.add(new_contact)
         db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+    return jsonify({"message": "Contact created successfully"}), 201
 
-        return jsonify({"message": "Contact created", "contact": new_contact.to_json()}), 201
 
 
 if __name__ == '__main__':
