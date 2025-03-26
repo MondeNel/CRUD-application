@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react"
 import ContactList from "./ContactList"
 
 function App() {
-  const [contacts, setContacts] = useState([])
+  const [contacts, setContacts] = useState([{"firstName": "Monde", "lastName": "Nel", "email": "monde@mail.com", id: 1}])
 
   useEffect(() => {
-    fetchContacts()
+    // fetchContacts()
   }, [])
 
   const fetchContacts = async () => {

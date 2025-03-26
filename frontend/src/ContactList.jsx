@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ContactList = ({ contacts }) => {
+
   return (
     <div className="container">
       <h2>Contacts</h2>
