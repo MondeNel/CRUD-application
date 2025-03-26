@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react"
 import ContactList from "./ContactList"
+import ContactForm from "./ContactForm"
 
 function App() {
-  const [contacts, setContacts] = useState([{"firstName": "Monde", "lastName": "Nel", "email": "monde@mail.com", id: 1}])
+  const [contacts, setContacts] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
-    // fetchContacts()
+    fetchContacts()
   }, [])
 
   const fetchContacts = async () => {
@@ -15,9 +17,28 @@ function App() {
     console.log(data.contacts);
   }
 
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
+
+  const openCreateModal = () => {
+    if(!isModalOpen) setIsModalOpen(true)
+  }
+
   return (
     <>
       <ContactList contacts={contacts} />
+      <button onClick={openCreateModal}>Create New Contact</button>
+      {
+        isModalOpen && (
+          <div className="modal">
+            <div className="modal-content">
+              <span className="close" onClick={closeModal}>&times;</span>
+              <ContactForm />
+            </div>
+          </div>
+        )
+      }
     </>
   )
 }
