@@ -5,9 +5,20 @@ const ContactForm = ({}) => {
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
 
+    const onSubmit = (e) => {
+        e.preventDefault()
+
+        const data = {
+            firstName,
+            lastName,
+            email
+        }
+        const url = "http://127.0.0.1:5000/create_account"
+    }
+
 
   return (
-    <form action="">
+    <form onSubmit={onSubmit}>
         {/* First Name */}
         <div>
             <label htmlFor="firstName">First Name:</label>
@@ -38,6 +49,7 @@ const ContactForm = ({}) => {
                 onChange={(e) => setEmail(e.target.value)} 
             />
         </div>
+        <button type='submit'>Create Contact</button>
     </form>
   )
 }
