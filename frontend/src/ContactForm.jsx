@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * ContactForm Component
@@ -9,11 +9,18 @@ import React, { useState } from 'react';
  * @param {Function} props.updateCallback - Callback function to refresh the contact list.
  */
 const ContactForm = ({ existingContact = {}, updateCallback }) => {
-    const [firstName, setFirstName] = useState(existingContact.firstName || '');
-    const [lastName, setLastName] = useState(existingContact.lastName || '');
-    const [email, setEmail] = useState(existingContact.email || '');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
 
-    const updating = Object.keys(existingContact).length !== 0;
+    // Ensure form fields update when switching between different contacts
+    useEffect(() => {
+        setFirstName(existingContact.firstName || '');
+        setLastName(existingContact.lastName || '');
+        setEmail(existingContact.email || '');
+    }, [existingContact]);
+
+    const updating = !!existingContact.id; // More reliable check for update mode
 
     /**
      * Handles form submission to create or update a contact.
@@ -21,29 +28,35 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
      */
     const onSubmit = async (e) => {
         e.preventDefault();
-
-        const data = { firstName, lastName, email };
-        const url = `http://127.0.0.1:5000/${updating ? `update_contact/${existingContact.id}` : 'create_contact'}`;
+    
+        const data = {
+            firstName,
+            lastName,
+            email
+        };
+    
+        const url = `http://127.0.0.1:5000/contacts${updating ? `/${existingContact.id}` : ""}`;
         const options = {
-            method: updating ? "PUT" : "POST", // Use PUT for updates
-            headers: { "Content-Type": "application/json" },
+            method: updating ? "PATCH" : "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(data)
         };
-
+    
         try {
             const response = await fetch(url, options);
-            const responseData = await response.json();
-
             if (!response.ok) {
-                alert(responseData.message || "Failed to save contact.");
+                const errorData = await response.json();
+                alert(errorData.message || "Failed to create contact");
             } else {
-                updateCallback();
+                updateCallback();  // Refresh the contact list
             }
         } catch (error) {
-            console.error("Error:", error);
-            alert("An error occurred while saving the contact.");
+            alert("Error: " + error.message);
         }
     };
+    
 
     return (
         <form onSubmit={onSubmit} className="contact-form">
