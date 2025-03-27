@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const ContactList = ({ contacts }) => {
+const ContactList = ({ contacts, updateContact, updateCallback }) => {
 
   return (
     <div className="container">
@@ -22,7 +22,7 @@ const ContactList = ({ contacts }) => {
                 <td>{contact.lastName}</td>
                 <td>{contact.email}</td>
                 <td>
-                  <button className="update">Update</button>
+                  <button className="update" onClick={() => updateContact(contact)}>Update</button>
                   <button className="delete">Delete</button>
                 </td>
               </tr>
