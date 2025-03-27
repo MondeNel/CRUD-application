@@ -1,25 +1,32 @@
 import React, { useState } from 'react';
 
-const ContactForm = () => {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
+/**
+ * ContactForm Component
+ * Handles creating and updating contacts.
+ *
+ * @param {Object} props - Component props.
+ * @param {Object} [props.existingContact={}] - Existing contact data for editing.
+ * @param {Function} props.updateCallback - Callback function to refresh the contact list.
+ */
+const ContactForm = ({ existingContact = {}, updateCallback }) => {
+    const [firstName, setFirstName] = useState(existingContact.firstName || '');
+    const [lastName, setLastName] = useState(existingContact.lastName || '');
+    const [email, setEmail] = useState(existingContact.email || '');
 
+    const updating = Object.keys(existingContact).length !== 0;
+
+    /**
+     * Handles form submission to create or update a contact.
+     * @param {Event} e - Form submit event.
+     */
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        const data = {
-            firstName,
-            lastName,
-            email
-        };
-
-        const url = "http://127.0.0.1:5000/contacts"; 
+        const data = { firstName, lastName, email };
+        const url = `http://127.0.0.1:5000/${updating ? `update_contact/${existingContact.id}` : 'create_contact'}`;
         const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            method: updating ? "PUT" : "POST", // Use PUT for updates
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         };
 
@@ -27,17 +34,14 @@ const ContactForm = () => {
             const response = await fetch(url, options);
             const responseData = await response.json();
 
-            if (response.status !== 201 && response.status !== 200) {
-                alert(responseData.message || "Failed to create contact");
+            if (!response.ok) {
+                alert(responseData.message || "Failed to save contact.");
             } else {
-                setFirstName('');
-                setLastName('');
-                setEmail('');
-                alert('Contact created successfully!');
+                updateCallback();
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("An error occurred while creating the contact.");
+            alert("An error occurred while saving the contact.");
         }
     };
 
@@ -76,7 +80,9 @@ const ContactForm = () => {
                     required
                 />
             </div>
-            <button type='submit' className="submit-btn">Create Contact</button>
+            <button type="submit" className="submit-btn">
+                {updating ? "Update Contact" : "Create Contact"}
+            </button>
         </form>
     );
 };
