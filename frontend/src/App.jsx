@@ -31,9 +31,10 @@ function App() {
       <button onClick={openCreateModal}>Create New Contact</button>
       {
         isModalOpen && (
-          <div className="modal">
+          <div className={`modal ${isModalOpen ? "show" : ""}`}>
             <div className="modal-content">
               <span className="close" onClick={closeModal}>&times;</span>
+              <h2>Create Contact</h2>
               <ContactForm />
             </div>
           </div>
