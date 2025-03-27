@@ -49,7 +49,7 @@ def create_contact():
 
 
 # Define a route to update a contact
-@app.route('/contacts/<int:id>', methods=['PUT'])
+@app.route('/contacts/<int:id>', methods=['PATCH'])
 def update_contact(id):
     """
     Update an existing contact in the database.
