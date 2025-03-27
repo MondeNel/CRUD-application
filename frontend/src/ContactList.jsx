@@ -20,9 +20,9 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       };
-
-      // Sending DELETE request to the backend
-      const response = await fetch(`http://127.0.0.1:5000/delete_contact/${id}`, options);
+  
+      // Sending DELETE request to the correct backend URL
+      const response = await fetch(`http://127.0.0.1:5000/contacts/${id}`, options);
       
       if (response.ok) {
         updateCallback(); // Refresh the contact list after successful deletion
@@ -34,6 +34,7 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
       alert("An error occurred while deleting the contact.");
     }
   };
+  
 
   return (
     <div className="container">
